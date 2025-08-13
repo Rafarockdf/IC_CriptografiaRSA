@@ -25,7 +25,8 @@ class RSA:
             if letra in self._dicionario_letras:
                 frase_pre_codificacao.append(self._dicionario_letras[letra])
         return ''.join(map(str, frase_pre_codificacao))  # string contínua
-
+    def gerar_primos(self):
+        pass
     def teste_miller_primo(self):
         pass
 
