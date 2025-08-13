@@ -1,5 +1,6 @@
 import unicodedata
-
+import random
+from teste import is_prime
 class RSA:
     _dicionario_letras = {
         'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15,
@@ -26,8 +27,11 @@ class RSA:
                 frase_pre_codificacao.append(self._dicionario_letras[letra])
         return ''.join(map(str, frase_pre_codificacao))  # string contínua
     def gerar_primos(self):
-        pass
-    def teste_miller_primo(self):
+        n = random.randint(10**150, 10**200)
+        mersenne = (2**n) - 1
+        return is_prime(mersenne),mersenne
+    def teste_miller_primo(self,n):
+        
         pass
 
     ## Método que faz a blocagem com base na chave gerada por dois primos
