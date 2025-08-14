@@ -12,8 +12,9 @@ class RSA:
 
     def __init__(self):
         self.frase = ""
-        self._keyPrivate1 = int()
-        self._keyPrivate2 = int()
+        self.__keyPrivate1 = int()
+        self.__keyPrivate2 = int()
+    
     # Parte 1 - Pré codificação
     ## Método para remover acesntos da string
     def _remover_acentos(self, texto):
@@ -35,11 +36,11 @@ class RSA:
             possible_key = random.randint(10**150, 10**200)
             if self.teste_miller_primo(possible_key) and flag == 0:
                 flag+=1
-                self._keyPrivate1 = possible_key
+                self.__keyPrivate1 = possible_key
             elif self.teste_miller_primo(possible_key) and flag == 1:
                 flag+=1
-                self._keyPrivate2 = possible_key
-        return self._keyPrivate1, self._keyPrivate2
+                self.__keyPrivate2 = possible_key
+        return self.__keyPrivate1, self.__keyPrivate2
                   
     def teste_miller_primo(self,n):
         return True
@@ -64,3 +65,9 @@ class RSA:
             blocos.append(bloco_atual)
             i += len(bloco_atual)
         return blocos
+
+
+objeto = RSA()
+
+chave1,chave2 = objeto.gerar_primos()
+print(objeto._dicionario_letras)

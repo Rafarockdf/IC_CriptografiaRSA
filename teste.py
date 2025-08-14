@@ -1,5 +1,6 @@
 import math
 import random
+
 def is_prime(num): 
     if num < 2: 
         return False 
@@ -16,12 +17,5 @@ def is_prime(num):
     return True 
 
 
-def gerar_primos():
-        n = random.randint(10**150, 10**200)
-        print(n)
-        return is_prime(n),n
+
     
-teste = (False,0)
-while teste[0] != True:
-    teste = gerar_primos()
-    print(teste)
