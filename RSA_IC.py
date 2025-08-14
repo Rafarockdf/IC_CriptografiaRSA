@@ -12,6 +12,8 @@ class RSA:
 
     def __init__(self):
         self.frase = ""
+        self._keyPrivate1 = int()
+        self._keyPrivate2 = int()
     # Parte 1 - Pré codificação
     ## Método para remover acesntos da string
     def _remover_acentos(self, texto):
@@ -26,18 +28,26 @@ class RSA:
             if letra in self._dicionario_letras:
                 frase_pre_codificacao.append(self._dicionario_letras[letra])
         return ''.join(map(str, frase_pre_codificacao))  # string contínua
+    
     def gerar_primos(self):
-        n = random.randint(10**150, 10**200)
-        mersenne = (2**n) - 1
-        return is_prime(mersenne),mersenne
+        flag = 0
+        while flag != 2:
+            possible_key = random.randint(10**150, 10**200)
+            if self.teste_miller_primo(possible_key) and flag == 0:
+                flag+=1
+                self._keyPrivate1 = possible_key
+            elif self.teste_miller_primo(possible_key) and flag == 1:
+                flag+=1
+                self._keyPrivate2 = possible_key
+        return self._keyPrivate1, self._keyPrivate2
+                  
     def teste_miller_primo(self,n):
-        
-        pass
-
+        return True
+    
     ## Método que faz a blocagem com base na chave gerada por dois primos
-    def pre_blocagem(self, numero_primo1, numero_primo2):
+    def pre_blocagem(self):
+        numero_primo1, numero_primo2 = self.gerar_primos()
         chave = numero_primo1 * numero_primo2
-        numero_teste = ""
         frase_pre_codificacao = self.pre_transforma_frase("Paraty é linda")
         blocos = []
         i = 0
