@@ -41,9 +41,6 @@ class RSA:
                 flag+=1
                 self.__keyPrivate2 = possible_key
         return self.__keyPrivate1, self.__keyPrivate2
-                  
-    import random
-
     # A função está fora de uma classe para ser mais fácil de testar.
     # Se quiser usar em uma classe, adicione o "self" como primeiro argumento.
     def teste_miller_rabin(self,n, k_testes=5):
@@ -59,10 +56,6 @@ class RSA:
         for _ in range(k_testes):
             if not self._miller_rabin_passo_a_passo(n):
                 return False # Se falhar uma vez, é definitivamente composto
-        if self.__keyPrivate1 > 0:
-            self.__keyPrivate2 = n
-        else:
-            self.__keyPrivate1 = n
         return True # Se passar em todos os testes, é muito provavelmente primo
 
     def _miller_rabin_passo_a_passo(self,n):
