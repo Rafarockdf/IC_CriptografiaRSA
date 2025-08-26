@@ -1,6 +1,5 @@
 import unicodedata
 import random
-from teste import is_prime
 class RSA:
     _dicionario_letras = {
         'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15,
@@ -11,9 +10,11 @@ class RSA:
     }
 
     def __init__(self):
-        self.frase = ""
+        self.__fraseCodificada = ""
+        self.__e = int()
         self.__keyPrivate1 = int()
         self.__keyPrivate2 = int()
+        self.__keyPublic = int()
     
     # Parte 1 - Pré codificação
     ## Método para remover acesntos da string
@@ -30,16 +31,16 @@ class RSA:
                 frase_pre_codificacao.append(self._dicionario_letras[letra])
         return ''.join(map(str, frase_pre_codificacao))  # string contínua
     
-    def gerar_primos(self):
+    def gerar_chaves_privadas(self):
         flag = 0
         while flag != 2:
             possible_key = random.randint(10**150, 10**200)
-            if self.teste_miller_rabin(possible_key) and flag == 0:
+            if self.teste_miller_rabin(11) and flag == 0:
                 flag+=1
-                self.__keyPrivate1 = possible_key
-            elif self.teste_miller_rabin(possible_key) and flag == 1:
+                self.__keyPrivate1 = 11
+            elif self.teste_miller_rabin(13) and flag == 1:
                 flag+=1
-                self.__keyPrivate2 = possible_key
+                self.__keyPrivate2 = 13
         return self.__keyPrivate1, self.__keyPrivate2
     # A função está fora de uma classe para ser mais fácil de testar.
     # Se quiser usar em uma classe, adicione o "self" como primeiro argumento.
@@ -88,26 +89,129 @@ class RSA:
                 return False
 
         return False
-
-
+    def gerar_chave_publica(self):
+        numero_primo1, numero_primo2 = self.gerar_chaves_privadas()
+        chave_publica = numero_primo1 * numero_primo2
+        self.__keyPublic = chave_publica
+        return self.__keyPublic
     
-    ## Método que faz a blocagem com base na chave gerada por dois primos
-    def pre_blocagem(self):
-        numero_primo1, numero_primo2 = self.gerar_primos()
-        chave = numero_primo1 * numero_primo2
-        frase_pre_codificacao = self.pre_transforma_frase("Paraty é linda")
+    def pre_blocagem(self, frase):
+        chave_publica = self.gerar_chave_publica()
+        frase_pre_codificacao = self.pre_transforma_frase(frase)
+        
+        # A string agora é uma lista de códigos de 2 dígitos
+        lista_de_codigos = [frase_pre_codificacao[i:i+2] for i in range(0, len(frase_pre_codificacao), 2)]
+        
         blocos = []
-        i = 0
-        while i < len(frase_pre_codificacao):
-            bloco_atual = frase_pre_codificacao[i]
-            j = i + 1
-            while j < len(frase_pre_codificacao):
-                bloco_potencial = frase_pre_codificacao[i : j+1]
-                if int(bloco_potencial) < chave:
-                    bloco_atual = bloco_potencial
-                    j = j + 1
-                else:
-                    break
+        bloco_atual = ""
+        for codigo in lista_de_codigos:
+            # Tenta adicionar o próximo código de 2 dígitos ao bloco atual
+            bloco_potencial = bloco_atual + codigo
+            if int(bloco_potencial) < chave_publica:
+                bloco_atual = bloco_potencial
+            else:
+                # O bloco potencial ficou muito grande, então salvamos o anterior
+                blocos.append(bloco_atual)
+                # O código atual inicia um novo bloco
+                bloco_atual = codigo
+        
+        # Adiciona o último bloco que estava sendo formado
+        if bloco_atual:
             blocos.append(bloco_atual)
-            i += len(bloco_atual)
+            
         return blocos
+    
+    def algoritimo_euclidiano(self,a,b):
+        r = 1
+        aux = 0
+        num1 = a
+        num2 = b
+        while r != 0:
+            r = a % b
+            if r == 0:
+                break
+            aux = b
+            b = r
+            a = aux
+        return b
+    def algoritimo_euclidiano_estendido(self,a,b):
+        x = [1,0]
+        y = [0,1]
+        x_completo = []
+        y_completo = []
+        r = 1
+        abs = 1
+        aux = 0
+        auxX = 0
+        auxY = 0
+        num1 = a
+        num2 = b
+        while r != 0:
+            r = a % b
+            abs = a // b
+            auxX = x[0] - (abs * x[1])
+            x[0] = x[1]
+            x[1] = auxX
+            auxY = y[0] - (abs * y[1])
+            y[0] = y[1]
+            y[1] = auxY
+            if r == 0:
+                break
+            x_completo.append(x[1])
+            y_completo.append(y[1])
+            aux = b
+            b = r
+            a = aux
+        #return f"O mdc({num1},{num2}) e igual a: {b} |  [x = {x[0]}, y = {y[0]}] | {x[0]} * {num1} + {y[0]} * {num2} = {x[0]*num1 + y[0]*num2}   {x_completo},{y_completo}"
+        return x[0]
+    def codificar(self,frase):
+        mensagem_blocada = self.pre_blocagem(frase)
+        bloco_codificado = []
+        e = 1
+        mdc = 0
+        o_n = (self.__keyPrivate1 - 1) * (self.__keyPrivate2 - 1)
+        while mdc != 1:
+            e += 1
+            mdc = self.algoritimo_euclidiano(e,o_n)
+        self.__e = e
+        for bloco in  mensagem_blocada:
+            bloco_codificado.append(str(pow(int(bloco),e,self.__keyPublic)))
+        self.__fraseCodificada = ' '.join(bloco_codificado)
+        return self.__fraseCodificada
+    
+    def decodificar(self):
+        mensagem_codificada = self.__fraseCodificada
+        mensagem_blocada = mensagem_codificada.split(' ')
+
+        bloco_decodificado = []
+        
+        o_n = (self.__keyPrivate1 - 1) * (self.__keyPrivate2 - 1)
+        x = self.algoritimo_euclidiano_estendido(self.__e, o_n)
+        d = int(x) % o_n
+
+        # Decodifica cada bloco para seu valor numérico original
+        for bloco in mensagem_blocada:
+            if bloco:
+                valor_decodificado = pow(int(bloco), d, self.__keyPublic)
+                bloco_decodificado.append(str(valor_decodificado))
+
+        # Junta todos os blocos decodificados para formar a string numérica gigante
+        # Como os blocos foram criados corretamente, a junção agora também é correta!
+        string_numerica_completa = "".join(bloco_decodificado)
+
+        # Cria um dicionário invertido para busca rápida
+        dicionario_valores = {str(v): k for k, v in self._dicionario_letras.items()}
+        
+        mensagem_decodificada_final = ""
+        i = 0
+        # Percorre a string numérica de 2 em 2 caracteres
+        while i < len(string_numerica_completa):
+            codigo_letra = string_numerica_completa[i:i+2]
+            if codigo_letra in dicionario_valores:
+                mensagem_decodificada_final += dicionario_valores[codigo_letra]
+            i += 2
+            
+        return mensagem_decodificada_final
+                    
+
+            
