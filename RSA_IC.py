@@ -35,12 +35,12 @@ class RSA:
         flag = 0
         while flag != 2:
             possible_key = random.randint(10**150, 10**200)
-            if self.teste_miller_rabin(11) and flag == 0:
+            if self.teste_miller_rabin(possible_key) and flag == 0:
                 flag+=1
-                self.__keyPrivate1 = 11
-            elif self.teste_miller_rabin(13) and flag == 1:
+                self.__keyPrivate1 = possible_key
+            elif self.teste_miller_rabin(possible_key) and flag == 1:
                 flag+=1
-                self.__keyPrivate2 = 13
+                self.__keyPrivate2 = possible_key
         return self.__keyPrivate1, self.__keyPrivate2
     # A função está fora de uma classe para ser mais fácil de testar.
     # Se quiser usar em uma classe, adicione o "self" como primeiro argumento.
@@ -118,14 +118,12 @@ class RSA:
         # Adiciona o último bloco que estava sendo formado
         if bloco_atual:
             blocos.append(bloco_atual)
-            
+        print(blocos)
         return blocos
     
     def algoritimo_euclidiano(self,a,b):
         r = 1
         aux = 0
-        num1 = a
-        num2 = b
         while r != 0:
             r = a % b
             if r == 0:
@@ -162,7 +160,6 @@ class RSA:
             aux = b
             b = r
             a = aux
-        #return f"O mdc({num1},{num2}) e igual a: {b} |  [x = {x[0]}, y = {y[0]}] | {x[0]} * {num1} + {y[0]} * {num2} = {x[0]*num1 + y[0]*num2}   {x_completo},{y_completo}"
         return x[0]
     def codificar(self,frase):
         mensagem_blocada = self.pre_blocagem(frase)
@@ -210,7 +207,7 @@ class RSA:
             if codigo_letra in dicionario_valores:
                 mensagem_decodificada_final += dicionario_valores[codigo_letra]
             i += 2
-            
+
         return mensagem_decodificada_final
                     
 

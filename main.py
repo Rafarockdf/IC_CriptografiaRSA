@@ -1,7 +1,7 @@
 from RSA_IC import RSA
 
 rsa = RSA()
-mensagem_codificada = rsa.codificar("Paraty é linda")
+mensagem_codificada = rsa.codificar("Olá meu nome é rafael luiz")
 print(f'Frase de Entrada = Paraty é linda')
 
 # Acesse usando o nome interno gerado pelo Python
