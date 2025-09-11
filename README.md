@@ -62,7 +62,7 @@ O RSA combina vários conceitos de **matemática aplicada**:
 ## 🚀 Exemplo de Uso
 
 ```python
-from rsa import RSA
+from RSA_IC import RSA
 
 # Inicializa o sistema
 rsa = RSA()
@@ -77,3 +77,4 @@ print("Mensagem codificada:", mensagem_codificada)
 # Descriptografia
 mensagem_decodificada = rsa.decodificar()
 print("Mensagem decodificada:", mensagem_decodificada)
+
